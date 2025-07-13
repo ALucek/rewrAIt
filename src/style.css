@@ -98,7 +98,7 @@ span.marker {
   z-index: 100;
   width: 300px;
   background-color: #0d0d0d;
-  border: 1px solid #0f0;
+  border: 2px solid #0f0;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   padding: 16px;
