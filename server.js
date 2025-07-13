@@ -1,9 +1,26 @@
 const express = require("express");
 const { PassThrough } = require("stream");
+const morgan = require("morgan");
 require("dotenv").config();
 
 const app = express();
 app.use(express.json({ limit: "2mb" }));
+// HTTP request logging
+app.use(morgan("combined"));
+
+// Heartbeat endpoint
+app.get("/health", (req, res) => res.status(200).json({ status: "ok" }));
+
+// --- Static file serving for production build ---
+const path = require("path");
+const distDir = path.join(__dirname, "dist");
+app.use(express.static(distDir));
+
+// SPA fallback: serve index.html for any unknown GET route
+app.get("/*", (req, res, next) => {
+  if (req.method !== "GET" || req.path.startsWith("/api")) return next();
+  res.sendFile(path.join(distDir, "index.html"));
+});
 
 const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
