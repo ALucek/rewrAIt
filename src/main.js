@@ -158,7 +158,12 @@ async function runQuery() {
       }
     }
   } catch (err) {
-    if (err.name !== "AbortError") console.error(err);
+    if (err.name !== "AbortError") {
+      console.error(err);
+      // Show the error inline so the user knows what went wrong
+      marker.insertAdjacentText("beforebegin", `[ERROR: ${err.message}]`);
+      marker.scrollIntoView({ block: "nearest" });
+    }
   } finally {
     marker.remove();
     currentAbortController = null;

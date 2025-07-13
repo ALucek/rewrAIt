@@ -14,6 +14,12 @@ export async function* streamCompletion(messages, signal, model) {
     signal,
   });
 
+  // Surface HTTP errors immediately so the caller can handle them
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`OpenAI API error: ${res.status} ${errorText}`);
+  }
+
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
@@ -127,6 +133,11 @@ export async function* streamGeminiCompletion(messages, signal, model) {
     body,
     signal,
   });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`Gemini API error: ${res.status} ${errorText}`);
+  }
 
   const reader = res.body.getReader();
   const decoder = new TextDecoder();

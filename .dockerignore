@@ -7,3 +7,4 @@ docker-compose.yml
 *.log
 npm-debug.log*
 .env 
+.DS_Store
