@@ -43,11 +43,11 @@ GEMINI_API_KEY=""
 $ docker compose up --build
 ```
 
-Once the server is running, open your browser to the printed URL and start prompting!
+Once the server is running, open your browser to the printed URL and start your conversation.
 
 ## Contributing
 
-Contributions welcome! Please feel free to submit a Pull Request.
+Contributions welcome, please feel free to submit a Pull Request.
 
 Todo:
 1. Local model support
