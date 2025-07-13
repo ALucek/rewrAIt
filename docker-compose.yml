@@ -2,6 +2,13 @@ version: "3.9"
 services:
   app:
     build: .
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:exec,nosuid,size=64m
     ports:
       - "3000:3000"
     env_file:
