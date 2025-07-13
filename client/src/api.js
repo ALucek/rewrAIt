@@ -18,7 +18,7 @@ async function readWithTimeout(reader, timeout = STREAM_TIMEOUT_MS) {
   }
 }
 
-/* ---- Fetch wrapper that yields tokens as they arrive (SSE) ----*/
+/* ---- Fetch wrapper that yields tokens as they arrive ----*/
 export async function* streamCompletion(messages, signal, model) {
   const modelName = model || DEFAULT_MODEL;
   const res = await fetch(`${API_BASE}/openai/chat/completions`, {
@@ -30,7 +30,7 @@ export async function* streamCompletion(messages, signal, model) {
     signal,
   });
 
-  // Surface HTTP errors immediately so the caller can handle them
+  // Surface HTTP errors immediately
   if (!res.ok) {
     const errorText = await res.text();
     throw new Error(`OpenAI API error: ${res.status} ${errorText}`);
@@ -136,7 +136,7 @@ export async function* streamAnthropicCompletion(messages, signal, model, system
   }
 }
 
-/* ---- Fetch wrapper that yields tokens as they arrive (Google Gemini SSE) ----*/
+/* ---- Fetch wrapper that yields tokens as they arrive ----*/
 export async function* streamGeminiCompletion(messages, signal, model) {
   // Gemini expects separate system instruction and contents array
   const systemMessage = messages.find((m) => m.role === "system");

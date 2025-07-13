@@ -22,15 +22,18 @@ const MODEL_STORAGE_KEY = "rewrait-llm-model";
 const DEFAULT_MODEL = "gpt-4o-mini";
 const PROVIDER_STORAGE_KEY = "rewrait-llm-provider";
 const DEFAULT_PROVIDER = "openai";
+const ALLOWED_PROVIDERS = ["openai", "anthropic", "google", "gemini"];
 
 let currentAbortController = null;
 
 function getModel() {
-  return localStorage.getItem(MODEL_STORAGE_KEY) || DEFAULT_MODEL;
+  const stored = localStorage.getItem(MODEL_STORAGE_KEY);
+  return stored && stored.trim() ? stored.trim() : DEFAULT_MODEL;
 }
 
 function getProvider() {
-  return localStorage.getItem(PROVIDER_STORAGE_KEY) || DEFAULT_PROVIDER;
+  const stored = (localStorage.getItem(PROVIDER_STORAGE_KEY) || "").toLowerCase();
+  return ALLOWED_PROVIDERS.includes(stored) ? stored : DEFAULT_PROVIDER;
 }
 
 function resetEditor() {
@@ -95,9 +98,12 @@ popupSaveBtn.addEventListener("click", () => {
   if (newModel) {
     localStorage.setItem(MODEL_STORAGE_KEY, newModel);
   }
-  const newProvider = providerInput.value.trim();
-  if (newProvider) {
+
+  const newProvider = providerInput.value.trim().toLowerCase();
+  if (ALLOWED_PROVIDERS.includes(newProvider)) {
     localStorage.setItem(PROVIDER_STORAGE_KEY, newProvider);
+  } else if (newProvider) {
+    alert(`Unsupported provider: ${newProvider}. \n\nValid options: ${ALLOWED_PROVIDERS.join(", ")}`);
   }
   hidePopup();
 });
