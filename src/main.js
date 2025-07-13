@@ -1,4 +1,4 @@
-import { streamCompletion, streamAnthropicCompletion } from "./api.js";
+import { streamCompletion, streamAnthropicCompletion, streamGeminiCompletion } from "./api.js";
 import {
   isCursorInUserPrompt,
   insertMarker,
@@ -141,6 +141,15 @@ async function runQuery() {
       )) {
         marker.insertAdjacentText("beforebegin", token);
         marker.scrollIntoView({ block: "nearest" }); // minimal autoscroll
+      }
+    } else if (provider === "google" || provider === "gemini") {
+      for await (const token of streamGeminiCompletion(
+        messages,
+        abortCtrl.signal,
+        model
+      )) {
+        marker.insertAdjacentText("beforebegin", token);
+        marker.scrollIntoView({ block: "nearest" });
       }
     } else {
       for await (const token of streamCompletion(messages, abortCtrl.signal, model)) {

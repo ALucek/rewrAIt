@@ -1,6 +1,7 @@
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY ?? "";
 const ANTHROPIC_API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY ?? "";
 const DEFAULT_MODEL = "gpt-4o-mini";
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY ?? "";
 
 /* ---- Fetch wrapper that yields tokens as they arrive (SSE) ----*/
 export async function* streamCompletion(messages, signal, model) {
@@ -94,6 +95,66 @@ export async function* streamAnthropicCompletion(messages, signal, model, system
         }
       } catch (_) {
         /* skip malformed line */
+      }
+    }
+  }
+}
+
+/* ---- Fetch wrapper that yields tokens as they arrive (Google Gemini SSE) ----*/
+export async function* streamGeminiCompletion(messages, signal, model) {
+  // Gemini expects separate system instruction and contents array
+  const systemMessage = messages.find((m) => m.role === "system");
+  const system_instruction = systemMessage
+    ? {
+        system_instruction: {
+          parts: [{ text: systemMessage.content }],
+        },
+      }
+    : {};
+
+  // Convert conversation into Gemini "contents" format
+  const contents = messages
+    .filter((m) => m.role !== "system")
+    .map((m) => ({
+      role: m.role === "assistant" || m.role === "ai" ? "model" : "user",
+      parts: [{ text: m.content }],
+    }));
+
+  const body = JSON.stringify({ ...system_instruction, contents });
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse`;
+
+  const res = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-goog-api-key": GEMINI_API_KEY,
+    },
+    body,
+    signal,
+  });
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split(/\r?\n/);
+    buffer = lines.pop();
+
+    for (const line of lines) {
+      if (!line.startsWith("data:")) continue;
+      const payload = line.replace("data:", "").trim();
+      if (payload === "[DONE]") return;
+      if (!payload) continue;
+      try {
+        const json = JSON.parse(payload);
+        const token = json.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (token) yield token;
+      } catch (_) {
+        /* ignore malformed */
       }
     }
   }
