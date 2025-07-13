@@ -1,7 +1,3 @@
-/* ---------------------------------------------
- * Quick-and-dirty prototype script — no deps
- * -------------------------------------------*/
-
 const editor = document.getElementById("editor");
 const OPENAI_API_KEY = window.OPENAI_API_KEY ?? "";
 const MODEL_NAME = window.OPENAI_MODEL ?? "gpt-4o-mini";
@@ -41,18 +37,31 @@ function insertMarker() {
 }
 
 function parseConversation() {
-  /*  Parse lines beginning with @User: or @AI: into [{role,content}]  */
-  const lines = editor.innerText.split("\n");
+  /* Parse conversation into [{role,content}] with multi-line messages between markers */
+  const text = editor.innerText;
+  const regex = /@User:|@AI:/g;
   const messages = [];
-  for (const line of lines) {
-    if (line.startsWith("@User:")) {
-      const content = line.replace("@User:", "").trim();
-      if (content) messages.push({ role: "user", content });
-    } else if (line.startsWith("@AI:")) {
-      const content = line.replace("@AI:", "").trim();
-      if (content) messages.push({ role: "assistant", content });
+  let match;
+  let currentRole = null;
+  let lastIndex = 0;
+
+  while ((match = regex.exec(text)) !== null) {
+    // Save content collected since the previous marker
+    if (currentRole) {
+      const content = text.slice(lastIndex, match.index).trim();
+      if (content) messages.push({ role: currentRole, content });
     }
+    // Update role and index for the next iteration
+    currentRole = match[0] === "@User:" ? "user" : "assistant";
+    lastIndex = regex.lastIndex;
   }
+
+  // Capture content after the final marker
+  if (currentRole) {
+    const content = text.slice(lastIndex).trim();
+    if (content) messages.push({ role: currentRole, content });
+  }
+
   return messages;
 }
 
