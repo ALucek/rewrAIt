@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "server": "node server.js"
+    "server": "node server/index.js"
   },
   "keywords": [],
   "author": "",

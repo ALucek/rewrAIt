@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
+  root: "client",
   server: {
     proxy: {
       "/api": {
@@ -9,5 +10,8 @@ export default defineConfig({
         secure: false,
       },
     },
+  },
+  build: {
+    outDir: "../dist",
   },
 }); 

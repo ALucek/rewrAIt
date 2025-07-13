@@ -1,9 +1,9 @@
 const DEFAULT_MODEL = "gpt-4o-mini";
-// All API calls are now proxied through the backend at /api to keep keys server-side
+// All API calls are proxied through the backend at /api to keep keys server-side
 const API_BASE = "/api";
 
-// Add an inactivity timeout so stalled network connections don't hang forever
-const STREAM_TIMEOUT_MS = 15000; // 15 seconds per chunk
+// Inactivity timeout so stalled network connections don't hang forever
+const STREAM_TIMEOUT_MS = 30000; // 30 seconds per chunk
 async function readWithTimeout(reader, timeout = STREAM_TIMEOUT_MS) {
   let timeoutId;
   try {

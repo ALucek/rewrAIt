@@ -54,7 +54,6 @@ function validateBody(schema) {
     if (!result.success) {
       return res.status(400).json({ error: "Invalid payload" });
     }
-    // Replace body with parsed (sanitised) data
     req.body = result.data;
     next();
   };

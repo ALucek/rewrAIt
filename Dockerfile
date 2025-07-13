@@ -7,8 +7,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-# Copy source and build the frontend
+# Copy source files
 COPY . .
+# Build frontend from client directory via npm script (vite reads root)
 RUN npm run build
 
 # ---------- Production stage ----------
@@ -19,8 +20,7 @@ ENV NODE_ENV=production
 
 # Copy production artefacts
 COPY --from=build /app/dist ./dist
-COPY --from=build /app/server.js ./server.js
-COPY --from=build /app/validation.js ./validation.js
+COPY --from=build /app/server ./server
 COPY --from=build /app/package*.json ./
 
 # Install only production deps
@@ -38,4 +38,4 @@ HEALTHCHECK --interval=30s --timeout=5s CMD curl -f http://localhost:3000/health
 
 EXPOSE 3000
 
-CMD ["node", "server.js"] 
+CMD ["node", "server/index.js"] 
