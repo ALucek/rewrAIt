@@ -1,0 +1,30 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+
+#toolbar {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: #f4f4f4;
+  border-bottom: 1px solid #d0d0d0;
+}
+
+#editor {
+  height: 100%;
+  padding: 1rem;
+  outline: none;
+  white-space: pre-wrap;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  overflow: auto;
+}
+
+/* zero-width marker that tracks insert position */
+span.marker {
+  display: inline-block;
+  width: 0;
+  height: 1em;
+} 
