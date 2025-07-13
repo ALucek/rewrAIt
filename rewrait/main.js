@@ -8,14 +8,36 @@ let currentAbort; // tracks the in-flight stream so we can cancel
 editor.addEventListener("keydown", async (e) => {
   if (e.key !== "Enter") return;
 
-  const line = getCurrentLineText();
-  if (!line.trim().startsWith("@User:")) return;
+  // Only trigger if the cursor is inside a user prompt block
+  if (!isCursorInUserPrompt()) return;
+
+  // In a user prompt block, Shift+Enter should add a newline.
+  if (e.shiftKey) {
+    return; // Allow default newline behavior
+  }
 
   e.preventDefault(); // stop default newline for cleaner UX
   await runQuery();
 });
 
 /* -------------------------------- helper fns -----------------------------*/
+
+function isCursorInUserPrompt() {
+  /* Check if the caret is currently inside a block of user-written text */
+  const sel = window.getSelection();
+  if (!sel.rangeCount) return false;
+
+  const range = sel.getRangeAt(0).cloneRange();
+  // Create a new range from the start of the editor up to the caret
+  range.setStart(editor, 0);
+
+  const textBeforeCursor = range.toString();
+  const lastUserIndex = textBeforeCursor.lastIndexOf("@User:");
+  const lastAiIndex = textBeforeCursor.lastIndexOf("@AI:");
+
+  // If @User: is present and it's the last role marker we found, we're in a user prompt.
+  return lastUserIndex !== -1 && lastUserIndex > lastAiIndex;
+}
 
 function getCurrentLineText() {
   /*  Return the text on the line where the caret sits  */
