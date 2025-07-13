@@ -97,9 +97,24 @@ function placeCaretAtEnd(el) {
   sel.addRange(range);
 }
 
+function resetEditor() {
+  if (currentAbort) {
+    currentAbort.abort();
+    currentAbort = null;
+  }
+  editor.innerHTML = "@User: ";
+  placeCaretAtEnd(editor);
+}
+
 async function runQuery() {
   // 1-- build messages array from the whole doc (user prompt is already in the editor)
   const messages = parseConversation();
+
+  const lastMessage = messages.at(-1);
+  if (lastMessage?.role === "user" && lastMessage?.content.trim().toLowerCase() === "clear") {
+    resetEditor();
+    return;
+  }
 
   // 2-- cancel any previous in-flight stream
   if (currentAbort) currentAbort.abort();
