@@ -1,4 +1,4 @@
-import { streamCompletion } from "./api.js";
+import { streamCompletion, streamAnthropicCompletion } from "./api.js";
 import {
   isCursorInUserPrompt,
   insertMarker,
@@ -16,14 +16,21 @@ const configPopup = document.getElementById("config-popup");
 const popupCancelBtn = document.getElementById("popup-cancel-btn");
 const popupSaveBtn = document.getElementById("popup-save-btn");
 const modelInput = document.getElementById("model-input");
+const providerInput = document.getElementById("provider-input");
 
 const MODEL_STORAGE_KEY = "rewrait-llm-model";
 const DEFAULT_MODEL = "gpt-4o-mini";
+const PROVIDER_STORAGE_KEY = "rewrait-llm-provider";
+const DEFAULT_PROVIDER = "openai";
 
 let currentAbortController = null;
 
 function getModel() {
   return localStorage.getItem(MODEL_STORAGE_KEY) || DEFAULT_MODEL;
+}
+
+function getProvider() {
+  return localStorage.getItem(PROVIDER_STORAGE_KEY) || DEFAULT_PROVIDER;
 }
 
 function resetEditor() {
@@ -64,6 +71,7 @@ configBtn.addEventListener("click", (e) => {
     hidePopup();
   } else {
     modelInput.value = getModel();
+    providerInput.value = getProvider();
     configPopup.style.display = "block";
     document.addEventListener("click", closePopupOnOutsideClick);
   }
@@ -86,6 +94,10 @@ popupSaveBtn.addEventListener("click", () => {
   const newModel = modelInput.value.trim();
   if (newModel) {
     localStorage.setItem(MODEL_STORAGE_KEY, newModel);
+  }
+  const newProvider = providerInput.value.trim();
+  if (newProvider) {
+    localStorage.setItem(PROVIDER_STORAGE_KEY, newProvider);
   }
   hidePopup();
 });
@@ -114,9 +126,27 @@ async function runQuery() {
   // 4-- stream tokens and insert them before marker
   try {
     const model = getModel();
-    for await (const token of streamCompletion(messages, abortCtrl.signal, model)) {
-      marker.insertAdjacentText("beforebegin", token);
-      marker.scrollIntoView({ block: "nearest" }); // minimal autoscroll
+    const provider = getProvider().toLowerCase();
+
+    if (provider === "anthropic") {
+      const systemMessage = messages.find((m) => m.role === "system");
+      const system = systemMessage?.content;
+      const otherMessages = messages.filter((m) => m.role !== "system");
+
+      for await (const token of streamAnthropicCompletion(
+        otherMessages,
+        abortCtrl.signal,
+        model,
+        system
+      )) {
+        marker.insertAdjacentText("beforebegin", token);
+        marker.scrollIntoView({ block: "nearest" }); // minimal autoscroll
+      }
+    } else {
+      for await (const token of streamCompletion(messages, abortCtrl.signal, model)) {
+        marker.insertAdjacentText("beforebegin", token);
+        marker.scrollIntoView({ block: "nearest" }); // minimal autoscroll
+      }
     }
   } catch (err) {
     if (err.name !== "AbortError") console.error(err);
