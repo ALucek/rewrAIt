@@ -4,7 +4,8 @@ import {
   insertMarker,
   parseConversation,
   placeCaretAtEnd,
-  resetEditor as resetEditorContent,
+  resetEditor as softResetEditor,
+  fullResetEditor,
 } from "./editor.js";
 import { saveSession, loadSession } from "./file-handler.js";
 
@@ -12,6 +13,7 @@ const editor = document.getElementById("editor");
 const saveBtn = document.getElementById("save-btn");
 const loadBtn = document.getElementById("load-btn");
 const configBtn = document.getElementById("config-btn");
+const resetBtn = document.getElementById("reset-btn");
 const configPopup = document.getElementById("config-popup");
 const popupCancelBtn = document.getElementById("popup-cancel-btn");
 const popupSaveBtn = document.getElementById("popup-save-btn");
@@ -36,12 +38,22 @@ function getProvider() {
   return ALLOWED_PROVIDERS.includes(stored) ? stored : DEFAULT_PROVIDER;
 }
 
+// Full reset – discard custom system prompt
 function resetEditor() {
   if (currentAbortController) {
     currentAbortController.abort();
     currentAbortController = null;
   }
-  resetEditorContent(editor);
+  fullResetEditor(editor);
+}
+
+// Soft reset via typing "clear" – keep current system prompt
+function softReset() {
+  if (currentAbortController) {
+    currentAbortController.abort();
+    currentAbortController = null;
+  }
+  softResetEditor(editor);
 }
 
 editor.addEventListener("keydown", async (e) => {
@@ -65,6 +77,10 @@ saveBtn.addEventListener("click", () => {
 
 loadBtn.addEventListener("click", () => {
   loadSession(editor);
+});
+
+resetBtn.addEventListener("click", () => {
+  resetEditor();
 });
 
 configBtn.addEventListener("click", (e) => {
@@ -114,7 +130,7 @@ async function runQuery() {
 
   const lastMessage = messages.at(-1);
   if (lastMessage?.role === "user" && lastMessage?.content.trim().toLowerCase() === "clear") {
-    resetEditor();
+    softReset();
     return;
   }
 
@@ -185,4 +201,4 @@ async function runQuery() {
 }
 
 // Initialize editor with a default system prompt
-resetEditorContent(editor); 
+softResetEditor(editor); 

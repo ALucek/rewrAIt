@@ -74,4 +74,10 @@ export function resetEditor(editor) {
 
   editor.textContent = `@system: ${systemContent}\n\n@user: `;
   placeCaretAtEnd(editor);
+}
+
+export function fullResetEditor(editor) {
+  // Discard any existing system prompt and return to the default
+  editor.textContent = "@system: You are a helpful assistant.\n\n@user: ";
+  placeCaretAtEnd(editor);
 } 
