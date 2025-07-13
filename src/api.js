@@ -1,7 +1,7 @@
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY ?? "";
 const ANTHROPIC_API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY ?? "";
-const DEFAULT_MODEL = "gpt-4o-mini";
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY ?? "";
+const DEFAULT_MODEL = "gpt-4o-mini";
 
 /* ---- Fetch wrapper that yields tokens as they arrive (SSE) ----*/
 export async function* streamCompletion(messages, signal, model) {
