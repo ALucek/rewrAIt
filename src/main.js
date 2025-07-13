@@ -167,7 +167,12 @@ async function runQuery() {
   } finally {
     marker.remove();
     currentAbortController = null;
-    // After AI response, create a fresh prompt line for the user
+
+    // After AI response, normalise trailing whitespace so we don't accumulate extra blank lines
+    // Remove any spaces or newlines at the very end of the document
+    editor.textContent = editor.textContent.replace(/\s+$/u, "");
+
+    // Create a fresh prompt line for the user with exactly two leading newlines
     editor.append("\n\n@user: ");
     placeCaretAtEnd(editor);
   }

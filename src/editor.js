@@ -28,17 +28,13 @@ export function insertMarker() {
 export function parseConversation(editor) {
   /* Parse conversation into [{role,content}] with multi-line messages between markers */
   const text = editor.innerText;
-  const regex = /@system:|@user:|@ai:/g;
+  // Match role markers only at the start of a line (optional leading whitespace allowed)
+  // Capture the role name (system|user|ai) so we can map it directly.
+  const regex = /^\s*@(?:(system|user|ai)):/gm;
   const messages = [];
   let match;
   let currentRole = null;
   let lastIndex = 0;
-
-  const roleMap = {
-    "@system:": "system",
-    "@user:": "user",
-    "@ai:": "assistant",
-  };
 
   while ((match = regex.exec(text)) !== null) {
     // Save content collected since the previous marker
@@ -46,8 +42,9 @@ export function parseConversation(editor) {
       const content = text.slice(lastIndex, match.index).trim();
       if (content) messages.push({ role: currentRole, content });
     }
-    // Update role and index for the next iteration
-    currentRole = roleMap[match[0]];
+    // Update role based on captured group and index for the next iteration
+    const roleKey = match[1];
+    currentRole = roleKey === "ai" ? "assistant" : roleKey;
     lastIndex = regex.lastIndex;
   }
 
