@@ -20,10 +20,38 @@ body {
   flex-direction: column;
 }
 
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
 #title {
-  margin: 0 0 0.5rem 0;
+  margin: 0;
   font-weight: normal;
   font-size: 1.25rem;
+}
+
+.controls {
+  margin-bottom: 0;
+  text-align: right;
+}
+
+.controls button {
+  background-color: transparent;
+  border: 2px solid #0f0;
+  color: #0f0;
+  font-family: 'VT323', monospace;
+  padding: 0.25rem 0.75rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.controls button:hover {
+  background-color: #0f0;
+  color: #000;
 }
 
 #toolbar {
@@ -53,7 +81,5 @@ body {
 
 /* zero-width marker that tracks insert position */
 span.marker {
-  display: inline-block;
-  width: 0;
-  height: 1em;
+  display: inline;
 } 
