@@ -1,15 +1,16 @@
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY ?? "";
-const MODEL_NAME = import.meta.env.VITE_LLM_MODEL ?? "gpt-4o-mini";
+const DEFAULT_MODEL = "gpt-4o-mini";
 
 /* ---- Fetch wrapper that yields tokens as they arrive (SSE) ----*/
-export async function* streamCompletion(messages, signal) {
+export async function* streamCompletion(messages, signal, model) {
+  const modelName = model || DEFAULT_MODEL;
   const res = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${OPENAI_API_KEY}`,
     },
-    body: JSON.stringify({ model: MODEL_NAME, stream: true, messages }),
+    body: JSON.stringify({ model: modelName, stream: true, messages }),
     signal,
   });
 

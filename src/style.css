@@ -85,3 +85,55 @@ body {
 span.marker {
   display: inline;
 } 
+
+/* --- Config Popup --- */
+.controls {
+  position: relative;
+}
+
+.popup-container {
+  position: absolute;
+  top: calc(100% + 15px); /* Position below the buttons */
+  right: 0;
+  z-index: 100;
+  width: 300px;
+  background-color: #0d0d0d;
+  border: 1px solid #0f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 16px;
+}
+
+.popup-content h2 {
+  margin-top: 0;
+  font-size: 18px;
+  border-bottom: 1px solid #444;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.popup-body label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  text-align: left;
+}
+
+.popup-body input {
+  width: calc(100%);
+  padding: 8px 10px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: #3a3a3c;
+  color: #f2f2f7;
+}
+
+.popup-footer {
+  margin-top: 20px;
+  text-align: right;
+}
+
+.popup-footer button {
+  margin-left: 10px;
+} 

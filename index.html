@@ -9,8 +9,22 @@
     <div class="header-container">
       <h1 id="title">rewrAIt</h1>
       <div class="controls">
+        <button id="config-btn">Config</button>
         <button id="save-btn">Save</button>
         <button id="load-btn">Load</button>
+        <div id="config-popup" class="popup-container" style="display: none;">
+          <div class="popup-content">
+            <h2>Settings</h2>
+            <div class="popup-body">
+              <label for="model-input">LLM Model:</label>
+              <input type="text" id="model-input" />
+            </div>
+            <div class="popup-footer">
+              <button id="popup-save-btn">Save</button>
+              <button id="popup-cancel-btn">Cancel</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div id="editor" contenteditable="true">@system: You are a helpful assistant.
