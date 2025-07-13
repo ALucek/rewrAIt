@@ -4,8 +4,6 @@
 # Build output
 /dist 
 
-config.js
+# Environment variables
 .DS_Store
-/testing
-
 .env
