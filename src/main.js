@@ -1,6 +1,6 @@
 const editor = document.getElementById("editor");
-const OPENAI_API_KEY = window.OPENAI_API_KEY ?? "";
-const MODEL_NAME = window.OPENAI_MODEL ?? "gpt-4o-mini";
+const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY ?? "";
+const MODEL_NAME = import.meta.env.VITE_LLM_MODEL ?? "gpt-4o-mini";
 
 let currentAbort; // tracks the in-flight stream so we can cancel
 
