@@ -4,7 +4,7 @@ const MODEL_NAME = window.OPENAI_MODEL ?? "gpt-4o-mini";
 
 let currentAbort; // tracks the in-flight stream so we can cancel
 
-/* Intercept Enter: if the current prompt line starts with @User: → call the model */
+/* Intercept Enter: if the current prompt line starts with @user: → call the model */
 editor.addEventListener("keydown", async (e) => {
   if (e.key !== "Enter") return;
 
@@ -32,10 +32,10 @@ function isCursorInUserPrompt() {
   range.setStart(editor, 0);
 
   const textBeforeCursor = range.toString();
-  const lastUserIndex = textBeforeCursor.lastIndexOf("@User:");
-  const lastAiIndex = textBeforeCursor.lastIndexOf("@AI:");
+  const lastUserIndex = textBeforeCursor.lastIndexOf("@user:");
+  const lastAiIndex = textBeforeCursor.lastIndexOf("@ai:");
 
-  // If @User: is present and it's the last role marker we found, we're in a user prompt.
+  // If @user: is present and it's the last role marker we found, we're in a user prompt.
   return lastUserIndex !== -1 && lastUserIndex > lastAiIndex;
 }
 
@@ -61,11 +61,17 @@ function insertMarker() {
 function parseConversation() {
   /* Parse conversation into [{role,content}] with multi-line messages between markers */
   const text = editor.innerText;
-  const regex = /@User:|@AI:/g;
+  const regex = /@system:|@user:|@ai:/g;
   const messages = [];
   let match;
   let currentRole = null;
   let lastIndex = 0;
+
+  const roleMap = {
+    "@system:": "system",
+    "@user:": "user",
+    "@ai:": "assistant",
+  };
 
   while ((match = regex.exec(text)) !== null) {
     // Save content collected since the previous marker
@@ -74,7 +80,7 @@ function parseConversation() {
       if (content) messages.push({ role: currentRole, content });
     }
     // Update role and index for the next iteration
-    currentRole = match[0] === "@User:" ? "user" : "assistant";
+    currentRole = roleMap[match[0]];
     lastIndex = regex.lastIndex;
   }
 
@@ -102,7 +108,11 @@ function resetEditor() {
     currentAbort.abort();
     currentAbort = null;
   }
-  editor.innerHTML = "@User: ";
+  const messages = parseConversation();
+  const systemMessage = messages.find((m) => m.role === "system");
+  const systemContent = systemMessage?.content || "You are a helpful assistant.";
+
+  editor.innerHTML = `@system: ${systemContent}\n\n@user: `;
   placeCaretAtEnd(editor);
 }
 
@@ -123,7 +133,7 @@ async function runQuery() {
 
   // 3-- place a zero-width marker at caret and prepend the AI label on a new line
   const marker = insertMarker();
-  marker.insertAdjacentText("beforebegin", "\n\n@AI: ");
+  marker.insertAdjacentText("beforebegin", "\n\n@ai: ");
 
   // 4-- stream tokens and insert them before marker
   try {
@@ -137,7 +147,7 @@ async function runQuery() {
     marker.remove();
     currentAbort = null;
     // After AI response, create a fresh prompt line for the user
-    editor.append("\n\n@User: ");
+    editor.append("\n\n@user: ");
     placeCaretAtEnd(editor);
   }
 }
