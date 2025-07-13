@@ -20,11 +20,19 @@ ENV NODE_ENV=production
 # Copy production artefacts
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/server.js ./server.js
+COPY --from=build /app/validation.js ./validation.js
 COPY --from=build /app/package*.json ./
 
 # Install only production deps
 RUN npm install --omit=dev \
-    && apk add --no-cache curl
+    && apk add --no-cache curl \
+    # Create non-root user for running the Node app
+    && addgroup -S appgroup \
+    && adduser -S appuser -G appgroup \
+    && chown -R appuser:appgroup /app
+
+# Drop root privileges
+USER appuser
 
 HEALTHCHECK --interval=30s --timeout=5s CMD curl -f http://localhost:3000/health || exit 1
 

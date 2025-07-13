@@ -1,10 +1,6 @@
 node_modules
 dist
-.git
-.gitignore
+.env
+*.log
 Dockerfile
 docker-compose.yml
-*.log
-npm-debug.log*
-.env 
-.DS_Store

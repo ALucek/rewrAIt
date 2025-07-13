@@ -72,6 +72,6 @@ export function resetEditor(editor) {
   const systemMessage = messages.find((m) => m.role === "system");
   const systemContent = systemMessage?.content || "You are a helpful assistant.";
 
-  editor.innerHTML = `@system: ${systemContent}\n\n@user: `;
+  editor.textContent = `@system: ${systemContent}\n\n@user: `;
   placeCaretAtEnd(editor);
 } 
