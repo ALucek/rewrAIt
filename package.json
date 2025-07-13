@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "server": "node server.js"
   },
   "keywords": [],
   "author": "",
@@ -11,5 +12,9 @@
   "description": "",
   "devDependencies": {
     "vite": "^7.0.4"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "dotenv": "^16.3.1"
   }
 }

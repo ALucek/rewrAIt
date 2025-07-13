@@ -1,16 +1,14 @@
-const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY ?? "";
-const ANTHROPIC_API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY ?? "";
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY ?? "";
 const DEFAULT_MODEL = "gpt-4o-mini";
+// All API calls are now proxied through the backend at /api to keep keys server-side
+const API_BASE = "/api";
 
 /* ---- Fetch wrapper that yields tokens as they arrive (SSE) ----*/
 export async function* streamCompletion(messages, signal, model) {
   const modelName = model || DEFAULT_MODEL;
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+  const res = await fetch(`${API_BASE}/openai/chat/completions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${OPENAI_API_KEY}`,
     },
     body: JSON.stringify({ model: modelName, stream: true, messages }),
     signal,
@@ -44,13 +42,11 @@ export async function* streamCompletion(messages, signal, model) {
 }
 
 export async function* streamAnthropicCompletion(messages, signal, model, system) {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  const res = await fetch(`${API_BASE}/anthropic/messages`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-api-key": ANTHROPIC_API_KEY,
       "anthropic-version": "2023-06-01",
-      "anthropic-dangerous-direct-browser-access": "true",
     },
     body: JSON.stringify({
       model,
@@ -121,13 +117,12 @@ export async function* streamGeminiCompletion(messages, signal, model) {
     }));
 
   const body = JSON.stringify({ ...system_instruction, contents });
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse`;
+  const endpoint = `${API_BASE}/gemini/${model}`;
 
   const res = await fetch(endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-goog-api-key": GEMINI_API_KEY,
     },
     body,
     signal,
