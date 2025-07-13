@@ -1,8 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+html {
+  box-sizing: border-box;
+}
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
 html,
 body {
   height: 100%;
   margin: 0;
-  font-family: system-ui, sans-serif;
+  background-color: #000;
+  color: #0f0;
+  font-family: 'VT323', monospace;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+#title {
+  margin: 0 0 0.5rem 0;
+  font-weight: normal;
+  font-size: 1.25rem;
 }
 
 #toolbar {
@@ -14,12 +35,20 @@ body {
 }
 
 #editor {
-  height: 100%;
+  flex-grow: 1;
   padding: 1rem;
   outline: none;
   white-space: pre-wrap;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: 'VT323', monospace;
   overflow: auto;
+  border: 2px solid #0f0;
+  border-radius: 10px;
+  background-color: #0d0d0d;
+}
+
+/* Let's make the caret green too */
+#editor:focus {
+  caret-color: #0f0;
 }
 
 /* zero-width marker that tracks insert position */
