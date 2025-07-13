@@ -123,6 +123,7 @@ span.marker {
 .popup-body input {
   width: calc(100%);
   padding: 8px 10px;
+  margin-bottom: 10px;
   border: 1px solid #555;
   border-radius: 4px;
   background-color: #3a3a3c;
@@ -130,7 +131,7 @@ span.marker {
 }
 
 .popup-footer {
-  margin-top: 20px;
+  margin-top: 5px;
   text-align: right;
 }
 
