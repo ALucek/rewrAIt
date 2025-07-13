@@ -5,5 +5,7 @@
 /dist 
 
 # Environment variables
-.DS_Store
 .env
+
+# Mac
+.DS_Store
