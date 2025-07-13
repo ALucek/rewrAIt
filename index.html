@@ -20,7 +20,7 @@
       }
 
       #editor {
-        height: calc(100% - 48px); /* toolbar height */
+        height: 100%;
         padding: 1rem;
         outline: none;
         white-space: pre-wrap;
@@ -37,13 +37,7 @@
     </style>
   </head>
   <body>
-    <div id="toolbar">
-      <button id="saveBtn">Save</button>
-      <button id="openBtn">Open</button>
-    </div>
-
-    <div id="editor" contenteditable="true">
-@User: </div>
+    <div id="editor" contenteditable="true">@User: </div>
 
     <script src="config.js"></script>
     <script type="module">
@@ -182,50 +176,6 @@
             }
           }
         }
-      }
-
-      /* --------------- Optional quick‑and‑dirty file save/open --------------- */
-      const supportsFS = "showSaveFilePicker" in window;
-
-      document.getElementById("saveBtn").addEventListener("click", async () => {
-        if (!supportsFS) return downloadBlob();
-        try {
-          const handle = await window.showSaveFilePicker({
-            suggestedName: "conversation.txt",
-            types: [{ description: "Text", accept: { "text/plain": [".txt"] } }],
-          });
-          const writable = await handle.createWritable();
-          await writable.write(editor.innerText);
-          await writable.close();
-        } catch (err) {
-          if (err.name !== "AbortError") console.error(err);
-        }
-      });
-
-      document.getElementById("openBtn").addEventListener("click", async () => {
-        if (!supportsFS) return alert("File open not supported in this browser");
-        try {
-          const [handle] = await window.showOpenFilePicker({
-            types: [{ description: "Text", accept: { "text/plain": [".txt"] } }],
-          });
-          const file = await handle.getFile();
-          editor.innerText = await file.text();
-        } catch (err) {
-          if (err.name !== "AbortError") console.error(err);
-        }
-      });
-
-      function downloadBlob() {
-        const blob = new Blob([editor.innerText], { type: "text/plain" });
-        const url = URL.createObjectURL(blob);
-        const a = Object.assign(document.createElement("a"), {
-          href: url,
-          download: "conversation.txt",
-        });
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
       }
     </script>
   </body>
