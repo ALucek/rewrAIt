@@ -1,4 +1,4 @@
-# rewrAIt - Control The Narrative With Your LLM.
+# rewrAIt - Control The Narrative With Your LLM
 
 <img src="static/rewrait_logo.png" width=175>
 
